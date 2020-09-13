@@ -1,0 +1,129 @@
+# -*- coding: utf-8 -*-
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoAlertPresentException
+import unittest, time, re
+
+class Booktest(unittest.TestCase):
+    def setUp(self):
+        self.driver = webdriver.Chrome()
+        self.driver.implicitly_wait(30)
+        self.base_url = "https://www.google.com/"
+        self.verificationErrors = []
+        self.accept_next_alert = True
+
+    
+    def test_book(self):
+        driver = self.driver
+        driver.get("http://localhost:3000/")
+
+        # Add book Sefiller
+        driver.find_element_by_link_text("Add Book").click()
+        driver.find_element_by_name("isbn").click()
+        driver.find_element_by_name("isbn").clear()
+        driver.find_element_by_name("isbn").send_keys("9789759099077")
+        driver.find_element_by_name("title").click()
+        driver.find_element_by_name("title").clear()
+        driver.find_element_by_name("title").send_keys("Sefiller")
+        driver.find_element_by_name("author").click()
+        driver.find_element_by_name("author").clear()
+        driver.find_element_by_name("author").send_keys("Victor Hugo")
+        driver.find_element_by_name("description").click()
+        driver.find_element_by_name("description").clear()
+        driver.find_element_by_name("description").send_keys("Classic")
+        driver.find_element_by_name("published_year").click()
+        driver.find_element_by_name("published_year").clear()
+        driver.find_element_by_name("published_year").send_keys("1910")
+        driver.find_element_by_name("publisher").click()
+        driver.find_element_by_name("publisher").clear()
+        driver.find_element_by_name("publisher").send_keys("Amazon")
+        driver.find_element_by_xpath("//button[@type='submit']").click()
+
+        # Add book Vadideki Zambak
+        driver.find_element_by_link_text("Add Book").click()
+        driver.find_element_by_name("isbn").click()
+        driver.find_element_by_name("isbn").clear()
+        driver.find_element_by_name("isbn").send_keys("8789759099077")
+        driver.find_element_by_name("title").click()
+        driver.find_element_by_name("title").clear()
+        driver.find_element_by_name("title").send_keys("Vadideki Zambak")
+        driver.find_element_by_name("author").click()
+        driver.find_element_by_name("author").clear()
+        driver.find_element_by_name("author").send_keys("Honore de Balzac")
+        driver.find_element_by_name("description").click()
+        driver.find_element_by_name("description").clear()
+        driver.find_element_by_name("description").send_keys("Classic")
+        driver.find_element_by_name("published_year").click()
+        driver.find_element_by_name("published_year").clear()
+        driver.find_element_by_name("published_year").send_keys("1920")
+        driver.find_element_by_name("publisher").click()
+        driver.find_element_by_name("publisher").clear()
+        driver.find_element_by_name("publisher").send_keys("Amazon")
+        driver.find_element_by_xpath("//button[@type='submit']").click()
+
+        # Update Vadideki Zambak's ISBN from  8789759099077 to 7789759099077
+        driver.find_element_by_link_text("8789759099077").click()
+        driver.find_element_by_link_text("Edit").click()
+        driver.find_element_by_name("isbn").click()
+        driver.find_element_by_name("isbn").clear()
+        driver.find_element_by_name("isbn").send_keys("7789759099077")
+        driver.find_element_by_xpath("//button[@type='submit']").click()
+
+        # Add book Anna Karenina
+        driver.find_element_by_link_text("Book List").click()
+        driver.find_element_by_link_text("Add Book").click()
+        driver.find_element_by_name("isbn").click()
+        driver.find_element_by_name("isbn").clear()
+        driver.find_element_by_name("isbn").send_keys("6789759099077")
+        driver.find_element_by_name("title").click()
+        driver.find_element_by_name("title").clear()
+        driver.find_element_by_name("title").send_keys("Anna Karenina")
+        driver.find_element_by_name("author").click()
+        driver.find_element_by_name("author").clear()
+        driver.find_element_by_name("author").send_keys("Leo Tolstoy")
+        driver.find_element_by_name("description").click()
+        driver.find_element_by_name("description").clear()
+        driver.find_element_by_name("description").send_keys("Classic")
+        driver.find_element_by_name("published_year").click()
+        driver.find_element_by_name("published_year").clear()
+        driver.find_element_by_name("published_year").send_keys("1878")
+        driver.find_element_by_name("publisher").click()
+        driver.find_element_by_name("publisher").clear()
+        driver.find_element_by_name("publisher").send_keys("Amazon")
+        driver.find_element_by_xpath("//button[@type='submit']").click()
+        
+        # Delete book Anna Karenina
+        driver.find_element_by_link_text("6789759099077").click()
+        driver.find_element_by_xpath("//div[@id='root']/div/div/div/div[2]/button").click()
+
+
+    def is_element_present(self, how, what):
+        try: self.driver.find_element(by=how, value=what)
+        except NoSuchElementException as e: return False
+        return True
+    
+    def is_alert_present(self):
+        try: self.driver.switch_to_alert()
+        except NoAlertPresentException as e: return False
+        return True
+    
+    def close_alert_and_get_its_text(self):
+        try:
+            alert = self.driver.switch_to_alert()
+            alert_text = alert.text
+            if self.accept_next_alert:
+                alert.accept()
+            else:
+                alert.dismiss()
+            return alert_text
+        finally: self.accept_next_alert = True
+    
+    def tearDown(self):
+        self.driver.quit()
+        self.assertEqual([], self.verificationErrors)
+
+if __name__ == "__main__":
+    unittest.main()
